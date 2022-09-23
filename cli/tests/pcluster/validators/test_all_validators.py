@@ -382,6 +382,7 @@ def test_scheduler_plugin_all_validators_are_called(test_datadir, mocker):
                 "CapacityReservationValidator",
                 "CapacityReservationResourceGroupValidator",
                 "DatabaseUriValidator",
+                "SlurmdbdStorageParametersValidator",
             ]
             + flexible_instance_types_validators
         ):

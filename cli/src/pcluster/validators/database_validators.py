@@ -11,11 +11,12 @@
 
 from urllib.parse import ParseResult, urlparse
 
+from pcluster.constants import SLURMDBD_STORAGE_PARAMETERS
 from pcluster.validators.common import FailureLevel, Validator
 
 
 class DatabaseUriValidator(Validator):
-    """Domain address validator."""
+    """Slurm database URI validator."""
 
     def _validate(self, uri: str):
         """Validate database URI."""
@@ -92,3 +93,36 @@ class DatabaseUriValidator(Validator):
                 FailureLevel.WARNING,
             )
         return True
+
+
+class SlurmdbdStorageParametersValidator(Validator):
+    """Slurmdbd StorageParameters validator"""
+
+    def _validate(self, slurmdbd_storage_parameters: dict):
+        """Validate slurmdbd StorageParameters."""
+        if not slurmdbd_storage_parameters:
+            self._add_failure(
+                "SlurmdbdStorageParameters not provided. This may prevent database "
+                "server identity verification from slurmdbd daemon.",
+                FailureLevel.WARNING,
+            )
+            return
+        config_keys = slurmdbd_storage_parameters.keys()
+        if "SSL_CA" not in config_keys:
+            self._add_failure(
+                "'SSL_CA' Slurmdbd StorageParameter not provided. This may prevent database "
+                "server identity verification from slurmdbd daemon.",
+                FailureLevel.WARNING,
+            )
+        for key, value in slurmdbd_storage_parameters.items():
+            if key not in SLURMDBD_STORAGE_PARAMETERS:
+                self._add_failure(
+                    f"'{key}' not available as Slurmdbd StorageParameter. The provided parameter will be ignored.",
+                    FailureLevel.INFO,
+                )
+                continue
+            if "," in value:
+                self._add_failure(
+                    "Comma is not an acceptable character for Slurmdbd StorageParameters.",
+                    FailureLevel.ERROR,
+                )

@@ -10,7 +10,7 @@
 # limitations under the License.
 import pytest
 
-from pcluster.validators.database_validators import DatabaseUriValidator
+from pcluster.validators.database_validators import DatabaseUriValidator, SlurmdbdStorageParametersValidator
 from tests.pcluster.validators.utils import assert_failure_messages
 
 
@@ -34,5 +34,36 @@ from tests.pcluster.validators.utils import assert_failure_messages
 def test_database_uri(uri, expected_message):
     actual_failures = DatabaseUriValidator().execute(
         uri=uri,
+    )
+    assert_failure_messages(actual_failures, expected_message)
+
+
+@pytest.mark.parametrize(
+    "slurmdbd_storage_parameters, expected_message",
+    [
+        ({"SSL_CA": "/path/to/ssl_ca_cert"}, None),
+        (
+            {"SSL_CAPATH": "/path/to/ssl_capath_cert"},
+            "'SSL_CA' Slurmdbd StorageParameter not provided. This may prevent database "
+            "server identity verification from slurmdbd daemon.",
+        ),
+        (
+            {"SSL_CA": "/path/to/ssl_ca_cert", "SSL_DUMMY": "dummy_parameter"},
+            "'SSL_DUMMY' not available as Slurmdbd StorageParameter. The provided parameter will be ignored.",
+        ),
+        (
+            {"SSL_CA": "/path/to/ssl,_ca_cert"},
+            "Comma is not an acceptable character for Slurmdbd StorageParameters.",
+        ),
+        (
+            {},
+            "SlurmdbdStorageParameters not provided. This may prevent database "
+            "server identity verification from slurmdbd daemon.",
+        ),
+    ],
+)
+def test_database_slurmdbd_storage_parameters(slurmdbd_storage_parameters, expected_message):
+    actual_failures = SlurmdbdStorageParametersValidator().execute(
+        slurmdbd_storage_parameters=slurmdbd_storage_parameters,
     )
     assert_failure_messages(actual_failures, expected_message)

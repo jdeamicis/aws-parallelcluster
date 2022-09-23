@@ -1331,7 +1331,7 @@ class DnsSchema(BaseSchema):
 
 
 class DatabaseSchema(BaseSchema):
-    """Represent the schema of the DirectoryService."""
+    """Represent the schema of the Slurm Database."""
 
     uri = fields.Str(required=True, metadata={"update_policy": UpdatePolicy.COMPUTE_FLEET_STOP})
     user_name = fields.Str(required=True, metadata={"update_policy": UpdatePolicy.COMPUTE_FLEET_STOP})
@@ -1340,6 +1340,9 @@ class DatabaseSchema(BaseSchema):
         validate=validate.Regexp(r"^arn:.*:secret"),
         metadata={"update_policy": UpdatePolicy.COMPUTE_FLEET_STOP},
     )
+    # We don't want to take ownership of the whole structure of the StorageParameters config
+    # parameter in slurmdbd.conf, so we define a generic dictionary rather than a subschema.
+    slurmdbd_storage_parameters = fields.Dict(metadata={"update_policy": UpdatePolicy.COMPUTE_FLEET_STOP})
 
     @post_load
     def make_resource(self, data, **kwargs):

@@ -45,6 +45,12 @@ Scheduling:
     Dns:
       DisableManagedDns: false
       HostedZoneId: 12345ABC
+    Database:
+      Uri: test.databaseserver.com
+      UserName: test_admin
+      PasswordSecretArn: arn:aws:secretsmanager:us-east-1:111111111111:secret:Secret-xxxxxxxx-xxxxx
+      SlurmdbdStorageParameters:
+        SSL_CA: "/path/to/ssl_ca_cert"
   SlurmQueues:
     - Name: queue1
       CapacityType: ONDEMAND
