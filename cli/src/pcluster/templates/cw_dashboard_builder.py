@@ -193,6 +193,18 @@ class CWDashboardConstruct(Construct):
             metric_list.append(cloudwatch_metric)
         return metric_list
 
+    def _generate_cw_agent_metrics_list(self, metrics):
+        metric_list = []
+        for metric in metrics:
+            cloudwatch_metric = cloudwatch.Metric(
+                namespace="ParallelClusterCloudWatchMetrics",
+                metric_name=metric,
+                dimensions_map={"InstanceId": self.head_node_instance.ref},
+            )
+            metric_list.append(cloudwatch_metric)
+        return metric_list
+
+
     def _add_conditional_storage_widgets(
         self,
         conditional_metrics,
@@ -299,12 +311,21 @@ class CWDashboardConstruct(Construct):
             new_pcluster_metric(title="Disk Read/Write Ops", metrics=["DiskReadOps", "DiskWriteOps"]),
         ]
 
+        cw_agent_metrics = [
+            new_pcluster_metric(title="Memory Utilization", metrics=["mem_used_percent"]),
+        ]
+
         # Create EC2 metrics graphs and update coordinates
         widgets_list = []
         for metrics_param in ec2_metrics:
             metrics_list = self._generate_ec2_metrics_list(metrics_param.metrics)
             graph_widget = self._generate_graph_widget(metrics_param.title, metrics_list)
             widgets_list.append(graph_widget)
+        for metrics_param in cw_agent_metrics:
+            metrics_list = self._generate_cw_agent_metrics_list(metrics_param.metrics)
+            graph_widget = self._generate_graph_widget(metrics_param.title, metrics_list)
+            widgets_list.append(graph_widget)
+
         self.cloudwatch_dashboard.add_widgets(*widgets_list)
         self._update_coord_after_section(self.graph_height)
 
