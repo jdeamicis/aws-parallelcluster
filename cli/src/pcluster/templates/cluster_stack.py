@@ -1056,6 +1056,9 @@ class ClusterCdkStack:
                     "compute_node_bootstrap_timeout": get_attr(
                         self.config, "dev_settings.timeouts.compute_node_bootstrap_timeout", NODE_BOOTSTRAP_TIMEOUT
                     ),
+                    "use_external_slurm_dynamic_nodes": "true"
+                    if self.config.dev_settings.use_external_slurm_dynamic_nodes
+                    else "false",
                     **(
                         get_slurm_specific_dna_json_for_head_node(self.config, self.scheduler_resources)
                         if self._condition_is_slurm()

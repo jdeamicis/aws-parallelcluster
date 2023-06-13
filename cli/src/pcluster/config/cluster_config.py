@@ -1101,6 +1101,7 @@ class ClusterDevSettings(BaseDevSettings):
         ami_search_filters: AmiSearchFilters = None,
         instance_types_data: str = None,
         timeouts: Timeouts = None,
+        use_external_slurm_dynamic_nodes: bool = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -1108,6 +1109,7 @@ class ClusterDevSettings(BaseDevSettings):
         self.ami_search_filters = Resource.init_param(ami_search_filters)
         self.instance_types_data = Resource.init_param(instance_types_data)
         self.timeouts = Resource.init_param(timeouts)
+        self.use_external_slurm_dynamic_nodes = Resource.init_param(use_external_slurm_dynamic_nodes, default=False)
 
     def _register_validators(self, context: ValidatorContext = None):
         super()._register_validators(context)
