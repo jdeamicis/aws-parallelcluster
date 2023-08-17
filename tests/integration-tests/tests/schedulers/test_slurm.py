@@ -2297,7 +2297,8 @@ def _test_memory_based_scheduling_enabled_false(
         nodes=1,
         command="sleep 1",
         constraint="ondemand1-i1",
-        other_options="--mem=4000 --test-only",
+        test_only=True,
+        other_options="--mem=4000",
         raise_on_error=False,
     )
     assert_that(result.stdout).is_equal_to("allocation failure: Requested node configuration is not available")
@@ -2306,7 +2307,8 @@ def _test_memory_based_scheduling_enabled_false(
     result = slurm_commands.submit_command(
         nodes=1,
         command="sleep 1",
-        other_options="--mem=4000 --test-only",
+        test_only=True,
+        other_options="--mem=4000",
         raise_on_error=False,
     )
     assert_that(result.stdout).matches(r"^.*Job \d* to start.*$")
@@ -2396,7 +2398,8 @@ def _test_memory_based_scheduling_enabled_true(
         slots=2,
         command="sleep 1",
         constraint="ondemand1-i1",
-        other_options="-c 1 --mem-per-cpu=2000 --test-only",
+        test_only=True,
+        other_options="-c 1 --mem-per-cpu=2000",
         raise_on_error=False,
     )
     assert_that(result.stdout).is_equal_to("allocation failure: Requested node configuration is not available")
