@@ -146,22 +146,18 @@ def test_slurm(
 
 
 @pytest.mark.usefixtures("instance", "os")
-def test_slurm_bug_17399(
+def test_slurm_ticket_17399(
     region, pcluster_config_reader, clusters_factory, test_datadir, architecture, scheduler_commands_factory
 ):
     """
-    Test Slurm bug 17399
+    Test Slurm ticket 17399
 
     Check if certain valid combinations of sbatch options lead to a submission error
     """
     gpu_instance_type = "g4dn.12xlarge"
-    disable_multithreading = False
     gpu_instance_type_info = get_instance_info(gpu_instance_type, region)
     gpus_per_instance = _get_num_gpus_on_instance(gpu_instance_type_info)
-    if disable_multithreading:
-        cpus_per_instance = gpu_instance_type_info.get("VCpuInfo").get("DefaultCores")
-    else:
-        cpus_per_instance = gpu_instance_type_info.get("VCpuInfo").get("DefaultVCpus")
+    cpus_per_instance = gpu_instance_type_info.get("VCpuInfo").get("DefaultVCpus")
 
     cluster_config = pcluster_config_reader(
         gpu_instance_type=gpu_instance_type,

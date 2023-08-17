@@ -154,7 +154,7 @@ test-suites:
           instances: ["c5.xlarge"]
           oss: ["alinux2"]
           schedulers: ["slurm"]
-    test_slurm.py::test_slurm_bug_17399:
+    test_slurm.py::test_slurm_ticket_17399:
       dimensions:
         - regions: ["eu-west-1"]
           instances: {{ common.INSTANCES_DEFAULT_X86 }}
